@@ -1,0 +1,22 @@
+{ "name": "minecraft-nether-roof-biomes-marker",
+  "version": "0.0.1",
+  "description": "In Minecraft, on the nether roof, use creative mode commands to mark biomes with blocks of your choice. .",
+  "keywords": [],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/minecraft-nether-roof-biomes-marker/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/minecraft-nether-roof-biomes-marker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/minecraft-nether-roof-biomes-marker/issues"
+  },
+  "contributors": [],
+
+  "private": true, "license": "ISC",
+
+
+
+  "engines": { "bash": ">=5", "xdotool": ">=3" }
+}

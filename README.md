@@ -96,6 +96,25 @@ thereby messing up the location of our sampling.
 
 
 
+Reverting failed attempts
+-------------------------
+
+You can automaticaly generate WorldEdit commands to fix it:
+
+`./nrbm.sh task=revert_preview radius=300`
+
+It uses multiple replace commands because of chat message length limits.
+
+If you like the commands, you can have them sent to chat by
+omitting the `_preview` part:
+
+`./nrbm.sh task=revert radius=300`
+
+Or you can write the preview to a file, adjust it, and then have that
+sent to chat:
+
+`./nrbm.sh task=stdin2chat <revert.txt`
+
 
 
 

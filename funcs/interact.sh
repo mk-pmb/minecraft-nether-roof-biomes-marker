@@ -3,23 +3,45 @@
 
 
 function nrbm_send_chat_cmd () {
-  local CMD="$1"
-  local MSG="${CFG[${CMD}_cmd]}"
+  local CHAT_CMD="$1"
+  local MSG="${CFG[${CHAT_CMD}_cmd]}"
   [ -n "$MSG" ] || return 8$(
-    echo "E: No such chat command template: $CMD" >&2)
+    echo "E: No such chat command template: $CHAT_CMD" >&2)
   local SLOT=
   for SLOT in "${!CHAT_SLOTS[@]}"; do
     MSG="${MSG//%$SLOT/${CHAT_SLOTS[$SLOT]}}"
   done
-  [ "$DBGLV" -lt 4 ] || echo "D: chat: '$MSG'"
+  nrbm_send_chat_msg "$MSG"
+  nrbm_wait_for_interaction "$CHAT_CMD" || return $?
+}
 
+
+function nrbm_send_chat_msg () {
+  local MSG="$*"
+  [ "$DBGLV" -lt 4 ] || echo "D: chat: '$MSG'"
   "${CFG[xdoprog]}" key "${CFG[chat_open_key]}" || return $?
   nrbm_wait_for_interaction chat_open || return $?
   "${CFG[xdoprog]}" type "$MSG" || return $?
   nrbm_wait_for_interaction chat_type || return $?
-  nrbm_wait_for_interaction chat_read_"$CMD" || return $?
+  nrbm_wait_for_interaction chat_read_"$CHAT_CMD" || return $?
   "${CFG[xdoprog]}" key "${CFG[chat_send_key]}" || return $?
-  nrbm_wait_for_interaction "$CMD" || return $?
+}
+
+
+function nrbm_stdin2chat () {
+  local LN=
+  while sleep "${CHAT_DELAY:-0.5s}"; do
+    LN=
+    IFS= read -r LN || break
+    LN="${LN%$'\r'}"
+    case "$LN" in
+      '#'* ) ;;
+      . ) break;;
+      * )
+        nrbm_send_chat_msg "$LN"
+        ;;
+    esac
+  done
 }
 
 

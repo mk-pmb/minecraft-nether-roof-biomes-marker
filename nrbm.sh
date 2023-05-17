@@ -10,6 +10,8 @@ function nrbm_init () {
     [task]='scan_and_mark'
     [formulae_var_max_nesting]=5
     )
+  CFG[minecraft_colors]="black brown cyan green $(echo {light_,}{blue,gray}
+    ) lime magenta orange pink purple red white yellow"
   nrbm_source_these_in_func "$SELFPATH"/funcs/*.sh || return $?
   nrbm_read_config "$@" || return $?
   nrbm_"${CFG[task]}" || return $?$(

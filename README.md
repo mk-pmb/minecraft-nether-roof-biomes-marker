@@ -11,8 +11,15 @@ with blocks of your choice. .
 
 
 
-This is a crutch.
------------------
+How it works
+------------
+
+The script will `/teleport` you to pre-defined places in a grid,
+guess biome from sky color, and `/setblock` a marker block accordingly.
+
+
+
+### This is a crutch.
 
 There were some mods that had way better ways of showing biome borders,
 especially because they change with elevation.
@@ -23,14 +30,6 @@ Good candidates I found so far:
 * [Bounding Box Outline Reloaded
   ](https://github.com/irtimaled/BoundingBoxOutlineReloaded/issues/)
 
-
-
-
-How it works
-------------
-
-The script will `/teleport` you to pre-defined places in a grid,
-guess biome from sky color, and `/setblock` a marker block accordingly.
 
 
 
@@ -125,6 +124,7 @@ sent to chat:
 Known issues
 ------------
 
+* It's a crutch. (See above.)
 * Needs more/better tests and docs.
 
 

@@ -30,6 +30,19 @@ Good candidates I found so far:
 * [Bounding Box Outline Reloaded
   ](https://github.com/irtimaled/BoundingBoxOutlineReloaded/issues/)
 
+Less promising candidates but maybe worth observing:
+
+* A biome map feature was also
+  [requested for Xaero's World Map][xaero-issue-cf135].
+  * Xaero's World Map Settings have an option "Biomes in Vanilla Mode"
+    but I have no idea what it does or how to enable Vanilla Mode.
+* [Biome Border Viewer
+  ](https://www.curseforge.com/minecraft/mc-mods/biome-border-viewer)
+  looks ancient, dead, and isn't free software; so even if we could
+  update it, we wouldn't have permission to do so.
+
+
+  [xaero-issue-cf135]: https://legacy.curseforge.com/minecraft/mc-mods/xaeros-world-map/issues/135
 
 
 

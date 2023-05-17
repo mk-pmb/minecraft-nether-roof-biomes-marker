@@ -132,23 +132,25 @@ CFG[chat_type_wait]='0.1s'
 # Key to send the chat message:
 CFG[chat_send_key]='Return'
 
+
+# Some offsets that will be explained in the description of teleport_cmd.
+CFG[teleport_d_x]=0
+CFG[teleport_d_y]=0
+CFG[teleport_d_z]=0
+CFG[teleport_f_x]=10
+CFG[teleport_f_y]=9001
+CFG[teleport_f_z]=10
+
 # What command to use for teleportation:
-CFG[teleport_cmd]='/teleport @s %x %y %z facing %f'
-#
-# The %f are coordinates in the south-east and above of target location,
-# so you can use it with "facing" to automatically aim your crosshait at
-# the sky and also a bit south-eastern. This helps avoid the smoke from
-# a campfire which may have been placed earlier to mark an unknown biome.
-# The exact offsets can be set below with teleport_f_{x,y,z}.
-#
+CFG[teleport_cmd]='/teleport @s %X %Y %Z facing %f'
 # The "@s" is the "target selector"[1]
 # [1] https://minecraft.fandom.com/wiki/Target_selectors
 # @s and @p seem to work.
 # IIRC %s means "self" and "self" means whoever invoked the command.
-
-CFG[teleport_f_x]=+10
-CFG[teleport_f_y]=+100
-CFG[teleport_f_z]=+10
+#
+# Lowercase %x, %y and %z are the current sampling point.
+# Uppercase %X, %Y and %Z are %x/%y/%z plus the "teleport_d_" offsets.
+# %f is a space-separated triplet of %x/%y%/z plus the "teleport_f_" offsets.
 
 # How long it takes from entering the teleport command until it's reliable
 # to screenshot the sky:
@@ -160,6 +162,11 @@ CFG[teleport_wait]='0.2s'
 # i.e. starting top-left, going right, then down to the left of the next
 # line. The first pixel that matches a "color:" option, wins and decides.
 CFG[setblock_cmd]='/setblock %x %y %z minecraft:%c_carpet'
+# Lowercase %x, %y and %z are the current sampling point.
+# Uppercase %X, %Y and %Z are %x/%y/%z plus the "setblock_d_" offsets.
+CFG[setblock_d_x]=0
+CFG[setblock_d_y]=5
+CFG[setblock_d_z]=0
 
 # How much time to give the setblock_cmd to take effect.
 CFG[setblock_wait]='0.2s'
@@ -167,7 +174,13 @@ CFG[setblock_wait]='0.2s'
 # What item to place in case of unknown biome, and how.
 # Unknown biome usually happens on the transition between two biomes,
 # when the sky color is a mix of nearby biomes.
-CFG[badbiome_cmd]='/setblock %x %y %z minecraft:campfire'
+CFG[badbiome_cmd]='/setblock %X %Y %Z minecraft:redstone_lamp[lit=true]'
+# Lowercase %x, %y and %z are the current sampling point.
+# Uppercase %X, %Y and %Z are %x/%y/%z plus the "badbiome_d_" offsets.
+CFG[badbiome_d_x]=0
+CFG[badbiome_d_y]=5
+CFG[badbiome_d_z]=0
+
 # How long it takes to run that command.
 CFG[badbiome_wait]='0.2s'
 

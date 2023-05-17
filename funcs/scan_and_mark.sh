@@ -7,8 +7,11 @@ function nrbm_scan_and_mark () {
   # local -p
   local PROGRESS_PERCENT='??'
   while [ "$N_PRI_SPT_DONE" -lt "$N_PRI_SPT_TOTAL" ]; do
-    nrbm_print_progress_indicator || return $?
+    PROGRESS_PERCENT=$(( ( 100 * N_PRI_SPT_DONE ) / N_PRI_SPT_TOTAL ))
+    printf '≈% 3d%%   ' "$PROGRESS_PERCENT"
     nrbm_mark_here || return $?
+    (( N_PRI_SPT_DONE += 1 ))
+    nrbm_mark_additional_probing_points || return $?
     nrbm_calculate_next_block || return $?
   done
   echo '=100%   No next block in range.'
@@ -16,10 +19,21 @@ function nrbm_scan_and_mark () {
 
 
 function nrbm_mark_here () {
-  local TPF_{X,Y,Z}=
-  let TPF_X="$POS_X + ( ${CFG[teleport_f_x]} )"
-  let TPF_Y="$POS_Y + ( ${CFG[teleport_f_y]} )"
-  let TPF_Z="$POS_Z + ( ${CFG[teleport_f_z]} )"
+  printf 'y=% 4d   ' "$POS_Y"
+  printf 'x=% 5d   ' "$POS_X"
+  printf 'z=% 5d   ' "$POS_Z"
+
+  local -A CHAT_SLOTS=()
+  local AXIS= VAL= TPF=
+  for AXIS in x y z; do
+    eval VAL='$POS_'"${AXIS^^}"
+    CHAT_SLOTS[$AXIS]="$VAL"
+    let CHAT_SLOTS[${AXIS^^}]="$VAL + (${CFG[teleport_d_$AXIS]:-0})"
+    let VAL="$VAL + (${CFG[teleport_f_$AXIS]:-0})"
+    TPF+="$VAL "
+  done
+  TPF="${TPF% }"
+  CHAT_SLOTS[f]="$TPF"
   nrbm_send_chat_cmd teleport || return $?
 
   local PIXELS=( $(nrbm_sshot_to_stdout | nrbm_stdin_pixels_to_hex) )
@@ -42,12 +56,35 @@ function nrbm_mark_here () {
       COLOR="$LOOKUP"
     done
     echo "item color: $COLOR"
+    CHAT_SLOTS[c]="$COLOR"
+    for AXIS in x y z; do
+      eval VAL='$POS_'"${AXIS^^}"
+      let "CHAT_SLOTS[${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
+    done
     nrbm_send_chat_cmd setblock || return $?
   else
+    echo 'place reminder'
+    for AXIS in x y z; do
+      eval VAL='$POS_'"${AXIS^^}"
+      let "CHAT_SLOTS[${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
+    done
     nrbm_send_chat_cmd badbiome || return $?
   fi
+}
 
-  (( N_PRI_SPT_DONE += 1 ))
+
+function nrbm_mark_additional_probing_points () {
+  local PRI_X="$POS_X"
+  local PRI_Z="$POS_Z"
+  local POS_{X,Z}=
+  local ADD="${CFG[additional_spots]}"
+  ADD="${ADD//,/ }"
+  for ADD in $ADD; do
+    let POS_X="$PRI_X + (${ADD%%:*})"
+    let POS_Z="$PRI_Z + (${ADD##*:})"
+    echo -n '   (+)  '
+    nrbm_mark_here || return $?
+  done
 }
 
 

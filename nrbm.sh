@@ -5,6 +5,7 @@
 function nrbm_init () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local SELFPATH="$(readlink -m -- "$BASH_SOURCE"/..)"
+  local DBGLV="${DEBUGLEVEL:-0}"
   local -A CFG=(
     [task]='scan_and_mark'
     [formulae_var_max_nesting]=5

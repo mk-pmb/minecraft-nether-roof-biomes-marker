@@ -3,7 +3,7 @@
 
 
 function nrbm_read_config () {
-  source -- "$SELFPATH"/defaults.rc || return $?
+  nrbm_source_one_in_func "$SELFPATH"/defaults.rc || return $?
   local K= V=
   for V in "$@"; do
     K="${V%%=*}"
@@ -11,7 +11,8 @@ function nrbm_read_config () {
     V="${V#*=}"
     case "$K" in
       '' )
-        source -- "$V" || return 4$(echo "E: Failed to source file '$V'" >&2)
+        nrbm_source_one_in_func "$V" || return 4$(
+          echo "E: Failed to source file '$V'" >&2)
         ;;
       * ) CFG["$K"]="$V";;
     esac

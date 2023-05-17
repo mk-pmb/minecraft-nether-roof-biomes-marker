@@ -7,15 +7,14 @@ function nrbm_send_chat_cmd () {
   local MSG="${CFG[${CMD}_cmd]}"
   [ -n "$MSG" ] || return 8$(
     echo "E: No such chat command template: $CMD" >&2)
+  local SLOT=
+  for SLOT in "${!CHAT_SLOTS[@]}"; do
+    MSG="${MSG//%$SLOT/${CHAT_SLOTS[$SLOT]}}"
+  done
+  [ "$DBGLV" -lt 4 ] || echo "D: chat: '$MSG'"
 
   "${CFG[xdoprog]}" key "${CFG[chat_open_key]}" || return $?
   nrbm_wait_for_interaction chat_open || return $?
-
-  MSG="${MSG//%x/$POS_X}"
-  MSG="${MSG//%y/$POS_Y}"
-  MSG="${MSG//%z/$POS_Z}"
-  MSG="${MSG//%f/$TPF_X $TPF_Y $TPF_Z}"
-  MSG="${MSG//%c/$COLOR}"
   "${CFG[xdoprog]}" type "$MSG" || return $?
   nrbm_wait_for_interaction chat_type || return $?
   nrbm_wait_for_interaction chat_read_"$CMD" || return $?

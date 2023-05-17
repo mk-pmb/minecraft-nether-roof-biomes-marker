@@ -15,16 +15,19 @@ CFG[look_before_setblock_wait]='0.1s'
 CFG[look_before_setblock_cmd]='/teleport @s ~ ~ ~ facing ~10 ~-100 ~10'
 
 
+# Each config has its own function scope, so we can use local variables.
+local SLOW='2s'
+
 # If you want extra time to read commands typed into chat before they are
 # sent, you can selectively delay sending here:
-CFG[chat_read_teleport_wait]=''
-CFG[chat_read_setblock_wait]='5s'
-CFG[chat_read_badbiome_wait]='5s'
+CFG[chat_read_teleport_wait]=""
+CFG[chat_read_setblock_wait]="$SLOW"
+CFG[chat_read_badbiome_wait]="$SLOW"
 
 
 # More time to watch the result:
-CFG[setblock_wait]='5s'
-CFG[badbiome_wait]='5s'
+CFG[setblock_wait]="$SLOW"
+CFG[badbiome_wait]="$SLOW"
 
 
 

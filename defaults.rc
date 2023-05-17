@@ -116,25 +116,46 @@ CFG[color:wastes]='red'
 
 
 
+# What program to use for keyboard interaction.
+# Set this to "echo" for a mere preview.
+CFG[xdoprog]='xdotool'
+
 # Key to open the ingame chat:
-CFG[chat_key]='t'
+CFG[chat_open_key]='t'
 
 # How long it takes from pressing "chat_key" until the chat is ready for input:
-CFG[chat_delay]='0.1s'
+CFG[chat_open_wait]='0.1s'
+
+# How long it takes for chat to receive typed message:
+CFG[chat_type_wait]='0.1s'
+
+# Key to send the chat message:
+CFG[chat_send_key]='Return'
 
 # What command to use for teleportation:
 CFG[teleport_cmd]='/teleport @s %x %y %z facing %f'
+#
+# The %f are coordinates in the south-east and above of target location,
+# so you can use it with "facing" to automatically aim your crosshait at
+# the sky and also a bit south-eastern. This helps avoid the smoke from
+# a campfire which may have been placed earlier to mark an unknown biome.
+# The exact offsets can be set below with teleport_f_{x,y,z}.
+#
 # The "@s" is the "target selector"[1]
 # [1] https://minecraft.fandom.com/wiki/Target_selectors
 # @s and @p seem to work.
 # IIRC %s means "self" and "self" means whoever invoked the command.
 
+CFG[teleport_f_x]=+10
+CFG[teleport_f_y]=+100
+CFG[teleport_f_z]=+10
+
 # How long it takes from entering the teleport command until it's reliable
 # to screenshot the sky:
 CFG[teleport_wait]='0.2s'
 
-# What item to place and how. "%c" is the result from translating pixel
-# colors using the "color:" options.
+# What item to place in case of valid biome, and how. "%c" is the result
+# from translating pixel colors using the "color:" options.
 # Pixels within the screenshot are scanned in American text reading order,
 # i.e. starting top-left, going right, then down to the left of the next
 # line. The first pixel that matches a "color:" option, wins and decides.
@@ -143,6 +164,12 @@ CFG[setblock_cmd]='/setblock %x %y %z minecraft:%c_carpet'
 # How much time to give the setblock_cmd to take effect.
 CFG[setblock_wait]='0.2s'
 
+# What item to place in case of unknown biome, and how.
+# Unknown biome usually happens on the transition between two biomes,
+# when the sky color is a mix of nearby biomes.
+CFG[badbiome_cmd]='/setblock %x %y %z minecraft:campfire'
+# How long it takes to run that command.
+CFG[badbiome_wait]='0.2s'
 
 
 
@@ -158,3 +185,10 @@ CFG[setblock_wait]='0.2s'
 
 
 
+
+
+
+
+
+
+# This line is a work-around for a misfeature of my text editor.

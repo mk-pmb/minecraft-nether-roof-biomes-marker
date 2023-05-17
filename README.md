@@ -54,8 +54,10 @@ Usage
       to spectator, adventure, and/or double-check your firewall rules.
 1.  Ensure you're invulnerable and not affected by gravity.
     (Spectator mode or flying in creative mode.)
-1.  Aim straight up, i.e. as high into the sky as you can.
 1.  Via your remote control mechanism, run `./nrbm.sh tmp.rc`
+    * If you want to slow down the setblock part in order to observe how
+      this script works, you can just append ` slow_setblock.rc`
+      to the command line.
 
 
 ### `nrbm.sh` command line arguments

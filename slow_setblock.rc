@@ -1,0 +1,49 @@
+#!/bin/bash # <- Syntax hint for GitHub
+# -*- coding: utf-8, tab-width: 2 -*-
+
+
+# You may want to look down before setblock, to see what block would be
+# replaced, and have an opportunity to quickly abort the program (Ctrl+c)
+# in case that block is important.
+# Otherwise, if you don't care, set this to empty for faster progress.
+# If you also use `chat_read_*_wait` below, you can set the look down
+# delay really short because you will still be able to see the block
+# while the chat window is still open.
+CFG[look_before_setblock_wait]='0.1s'
+
+# How to look down.
+CFG[look_before_setblock_cmd]='/teleport @s ~ ~ ~ facing ~10 ~-100 ~10'
+
+
+# If you want extra time to read commands typed into chat before they are
+# sent, you can selectively delay sending here:
+CFG[chat_read_teleport_wait]=''
+CFG[chat_read_setblock_wait]='5s'
+CFG[chat_read_badbiome_wait]='5s'
+
+
+# More time to watch the result:
+CFG[setblock_wait]='5s'
+CFG[badbiome_wait]='5s'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# This line is a work-around for a misfeature of my text editor.

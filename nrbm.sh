@@ -7,6 +7,7 @@ function nrbm_init () {
   local SELFPATH="$(readlink -m -- "$BASH_SOURCE"/..)"
   local -A CFG=(
     [task]='scan_and_mark'
+    [formulae_var_max_nesting]=5
     )
   nrbm_source_these_in_func "$SELFPATH"/funcs/*.sh || return $?
   nrbm_read_config "$@" || return $?

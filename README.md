@@ -52,8 +52,7 @@ Usage
       "Allow cheats" checkbox.
       Depending on your LAN you may want to set joining player's game mode
       to spectator, adventure, and/or double-check your firewall rules.
-1.  Ensure you're invulnerable and not affected by gravity.
-    (Spectator mode or flying in creative mode.)
+1.  Ensure you're in spectator mode.
 1.  Via your remote control mechanism, run `./nrbm.sh tmp.rc`
     * If you want to slow down the setblock part in order to observe how
       this script works, you can just append ` slow_setblock.rc`
@@ -79,6 +78,22 @@ It might turn out that the only options you need are
 `radius`, `ccx`, `ccz` and maybe `extra_floors`.
 In that case, you might consider passing them as command line
 options rather than using a custom config file.
+
+
+### Why spectator mode?
+
+Flying in creative has most of the features we'd need:
+
+* Resist gravity
+* Resist suffocation
+* Resist most other damage
+  * Void damage won't be relevant since we're usually in building range.
+
+However, creative mode interferes with our teleportations
+if the destination happens to have a solid block, because
+your feet will automatically evade it if they can,
+thereby messing up the location of our sampling.
+
 
 
 

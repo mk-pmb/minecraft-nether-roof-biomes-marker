@@ -1,0 +1,160 @@
+#!/bin/bash # <- Syntax hint for GitHub
+# -*- coding: utf-8, tab-width: 2 -*-
+
+# First, we need to select the area that shall be scanned.
+# For this, we will define a grid of primary sampling points where
+# spot samples will be taken, and then additional sampling points based
+# on the primary ones.
+
+# Some auxiliary variables for our coordinate calculations:
+CFG[chunk_length]=16
+CFG[radius]=2
+
+# Be warned time required rises quadratically with radius, so you'll
+# probably want to mark only a few chunks around your build project.
+# So rather than increasing radius, adjust the X/Z chunk number of
+# your project's center chunk (Debug screen: left, 2nd section, "Chunk:").
+# ccx/ccz = Center Chunk X/Z
+CFG[ccx]=0
+CFG[ccz]=0
+
+
+
+# Coordinate formulae can use any config option. The option name must be
+# surrounded by {curly braces}. We can use this to implement custom
+# semantic options like ccx/ccz/radius above, and then use them to derive
+# position-related option values.
+
+# X (east) coordinate range for primary sampling points.
+CFG[step_east]='{chunk_length}'
+CFG[min_east]='{chunk_length} * (({ccx}) - {radius})'
+CFG[max_east]='({chunk_length} * (({ccx}) + {radius} + 1)) - 1'
+# ^-- The far-east inner border of our range is the block that is
+#     *almost* (-1) inside the next (+1) chunk.
+#     (You can trivially verify this with ccx=0 and radius=0.)
+
+# Z (south) coordinate range for primary sampling points.
+CFG[step_south]='{chunk_length}'
+CFG[min_south]='{chunk_length} * (({ccz}) - {radius})'
+CFG[max_south]='({chunk_length} * (({ccz}) + {radius} + 1)) - 1'
+
+# Y (up) coordinate range for primary sampling points.
+CFG[step_up]=40
+CFG[min_up]=128
+# ^-- To find this: Place a block manually at the height where you'd
+#     want it to be placed, aim at that block, and in the debug screen,
+#     check the "Targeted Block:" coordinates (right side middle).
+CFG[extra_floors]=0
+# ATTN: When you use multiple floors, make sure to remove the remains
+# of previous attempts, or you might not be able to see the sky from
+# the lower floor positions!
+CFG[max_up]="{min_up} + ({extra_floors} * {step_up})"
+
+
+
+
+# Additional sampling points will be calculated for each primary sampling
+# point. There are no range limit options for them because range limits only
+# apply to primary sampling points.
+CFG[additional_spots]='+0:+15, +15:+0, +15:+15'
+# For separating the pairs, you may use any combination of comma and space.
+# Extraneous commas and/or spaces at the start or end of the list are ignored.
+
+
+
+# If your previous run failed or you had to abort it, you can use these
+# to resume operation from the last successful chunk. Empty = Start anew.
+CFG[resume_y]=
+CFG[resume_x]=
+CFG[resume_z]=
+
+
+
+# What part of your screen shall be shot. Uses absolute desktop coordinates.
+# For what that means in multi-display setups, please refer to "man scrot".
+# This should be an area where the sky will be visible.
+# Lower width (w) and height (h) are more efficient,
+# but in biomes with airborne particles (e.g. Basalt delta)
+# you may need a larger to reliably get some sky pixels.
+CFG[sshot_x]=200
+CFG[sshot_y]=200
+CFG[sshot_w]=8
+CFG[sshot_h]="${CFG[sshot_w]}"
+
+
+# If your sky has rather large particles, and thus you need a big screenshot
+# area, you may want to not scan all the pixel but rather just every n-th.
+# Examples: Set this to "1" to scan every pixel, or "5" to scan every fifth
+# pixel (20% of the image).
+CFG[sshot_n]=5
+
+
+
+# Map sky color (uppercase hex RRGGBB) to biome name.
+# Special biome name "FAIL" can be used to fail early. You may use this to
+# detect obvious failure conditions, e.g. when a color is found that is
+# very unlikely to be seen in the nether sky but coincides with your desktop
+# background or terminal background.
+CFG[color:000000]='FAIL'
+CFG[color:FFFFFF]='FAIL'
+
+CFG[color:150415]='warped'
+CFG[color:163A38]='soulsand'
+CFG[color:290202]='crimson'
+CFG[color:290707]='wastes'
+CFG[color:554D5B]='basalt'
+
+
+
+# Map biome name to item name part "%c" for option "setblock_cmd".
+# Default colors are bright in order to contrast strongly with the bedrock.
+CFG[color:basalt]='light_gray'
+CFG[color:crimson]='magenta'
+CFG[color:soulsand]='yellow'
+CFG[color:warped]='lime'
+CFG[color:wastes]='red'
+
+
+
+# Key to open the ingame chat:
+CFG[chat_key]='t'
+
+# How long it takes from pressing "chat_key" until the chat is ready for input:
+CFG[chat_delay]='0.1s'
+
+# What command to use for teleportation:
+CFG[teleport_cmd]='/teleport @s %x %y %z facing %f'
+# The "@s" is the "target selector"[1]
+# [1] https://minecraft.fandom.com/wiki/Target_selectors
+# @s and @p seem to work.
+# IIRC %s means "self" and "self" means whoever invoked the command.
+
+# How long it takes from entering the teleport command until it's reliable
+# to screenshot the sky:
+CFG[teleport_wait]='0.2s'
+
+# What item to place and how. "%c" is the result from translating pixel
+# colors using the "color:" options.
+# Pixels within the screenshot are scanned in American text reading order,
+# i.e. starting top-left, going right, then down to the left of the next
+# line. The first pixel that matches a "color:" option, wins and decides.
+CFG[setblock_cmd]='/setblock %x %y %z minecraft:%c_carpet'
+
+# How much time to give the setblock_cmd to take effect.
+CFG[setblock_wait]='0.2s'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

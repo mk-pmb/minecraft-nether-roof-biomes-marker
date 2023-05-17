@@ -74,7 +74,7 @@ You may omit options for which you like the default,
 because `defaults.rc` will always be read first.
 
 It might turn out that the only options you need are
-`radius` and maybe `extra_floors`.
+`radius`, `ccx`, `ccz` and maybe `extra_floors`.
 In that case, you might consider passing them as command line
 options rather than using a custom config file.
 

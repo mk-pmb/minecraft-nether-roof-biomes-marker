@@ -25,6 +25,8 @@ function nrbm_stdin_pixels_to_hex () {
 
 
 function nrbm_sshot_to_stdout () {
+  local FAKE="${CFG[debug_fake_screenshot]}"
+  if [ -n "$FAKE" ]; then cat -- "$FAKE"; return $?; fi
   local AREA="${CFG[sshot_x]},${CFG[sshot_y]},${CFG[sshot_w]},${CFG[sshot_h]}"
   scrot --silent --autoselect "$AREA" --overwrite -- /dev/stdout
 }

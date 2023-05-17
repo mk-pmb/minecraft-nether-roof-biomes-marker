@@ -29,19 +29,24 @@ function nrbm_send_chat_msg () {
 
 
 function nrbm_stdin2chat () {
-  local LN=
+  local LN= N_SENT=0 N_TOTAL=
   while sleep "${CHAT_DELAY:-0.5s}"; do
     LN=
     IFS= read -r LN || break
     LN="${LN%$'\r'}"
     case "$LN" in
+      '//# n_msgs='* ) N_TOTAL="${LN#*=}";;
       '#'* ) ;;
       . ) break;;
       * )
+        (( N_SENT += 1 ))
+        [ -z "$N_TOTAL" ] || echo -n $'\r'"Message #$N_SENT of $N_TOTAL (≈"$((
+            ( 100 * N_SENT ) / N_TOTAL ))'%). '
         nrbm_send_chat_msg "$LN"
         ;;
     esac
   done
+  [ -z "$N_TOTAL" ] || echo "Done: Sent $N_TOTAL chat messages."
 }
 
 

@@ -13,8 +13,9 @@ function nrbm_init () {
   CFG[minecraft_colors]="black brown cyan green $(echo {light_,}{blue,gray}
     ) lime magenta orange pink purple red white yellow"
   nrbm_source_these_in_func "$SELFPATH"/funcs/*.sh || return $?
+  local TASK_ARGS=()
   nrbm_read_config "$@" || return $?
-  nrbm_"${CFG[task]}" || return $?$(
+  nrbm_"${CFG[task]}" "${TASK_ARGS[@]}" || return $?$(
     echo "E: Task '${CFG[task]}' failed with error code $?." >&2)
 }
 

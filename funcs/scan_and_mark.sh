@@ -87,6 +87,10 @@ function nrbm_mark_here () {
       let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
     done
     nrbm_send_chat_cmd badbiome || return $?
+
+    VAL="${CFG[max_bad_biomes]:-0}"
+    [ "$VAL" == 0 ] || [ "$VAL" -gt "$N_BAD_BIOMES" ] || return 4$(
+      echo 'E: Reached the max_bad_biomes limit. Quit.' >&2)
   fi
 }
 

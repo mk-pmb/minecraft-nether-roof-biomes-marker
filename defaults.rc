@@ -214,6 +214,8 @@ CFG[badbiome_d_z]=0
 # How much time to give each of the commands in badbiome_cmd to take effect.
 CFG[badbiome_wait]='0.2s'
 
+# Maximum acceptable number of unknown biomes encountered. 0 = ignore all.
+CFG[max_bad_biomes]=1
 
 
 

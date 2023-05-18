@@ -9,6 +9,18 @@ function nrbm_scan_and_mark () {
   [ "${STOP_AT:0:1}" == + ] && let STOP_AT="$N_PRI_SPT_DONE$STOP_AT"
 
   local PROGRESS_PERCENT='??'
+  nrbm_scan_and_mark_main_loop && return 0
+  local SAM_RV="$?"
+  local MSG="E: $FUNCNAME failed (rv=$SAM_RV) at" AXIS=
+  for AXIS in x y z; do
+    eval 'MSG+=" resume_"$AXIS=$POS_'${AXIS^^}
+  done
+  echo "$MSG" >&2
+  return "$SAM_RV"
+}
+
+
+function nrbm_scan_and_mark_main_loop () {
   while [ "$N_PRI_SPT_DONE" -lt "$N_PRI_SPT_TOTAL" ]; do
     PROGRESS_PERCENT=$(( ( 100 * N_PRI_SPT_DONE ) / N_PRI_SPT_TOTAL ))
     printf '≈% 3d%%   ' "$PROGRESS_PERCENT"

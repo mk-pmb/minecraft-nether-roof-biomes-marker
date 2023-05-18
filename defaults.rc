@@ -76,6 +76,8 @@ CFG[resume_z]=
 # Lower width (w) and height (h) are more efficient,
 # but in biomes with airborne particles (e.g. Basalt delta)
 # you may need a larger to reliably get some sky pixels.
+# If you want to skip sky color guessing and want to always use OCR
+# insted (see `ocr_cmd` below), set `sshot_w` to 0.
 CFG[sshot_x]=200
 CFG[sshot_y]=200
 CFG[sshot_w]=8
@@ -115,7 +117,8 @@ CFG[color:554D5B]='basalt'
 
 # Xaero's World Map can display biome names, so we can also use OCR
 # as fallback if pixel colors aren't conclusive.
-CFG[ocr_cmd]='./util/gocr_xywh.sh 1300,328,300,22'
+CFG[ocr_area]='1300,328,300,22'
+CFG[ocr_cmd]='./util/gocr_xywh.sh "${CFG[ocr_area]}"'
 
 
 

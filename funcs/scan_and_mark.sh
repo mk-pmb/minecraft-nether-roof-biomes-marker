@@ -55,10 +55,14 @@ function nrbm_mark_here () {
   CFG[chat:f]="$TPF"
   nrbm_send_chat_cmd teleport || return $?
 
-  SSHOT="$(nrbm_sshot_to_stdout)"
-  local BIOME_NAME= BIOME_COLORS= UNKNOWN_COLORS=
-  local COLOR="$( <<<"$SSHOT" nrbm_stdin_pixels_to_hex \
-    | sort --version-sort --unique )"
+  SSHOT=
+  [ "${CFG[sshot_w]}" == 0 ] || SSHOT="$(nrbm_sshot_to_stdout)"
+  local COLOR=
+  [ -z "$SSHOT" ] || COLOR="$(
+    <<<"$SSHOT" nrbm_stdin_pixels_to_hex | sort --version-sort --unique)"
+  local BIOME_NAME=
+  local BIOME_COLORS=
+  local UNKNOWN_COLORS=
   for COLOR in $COLOR; do
     VAL="${CFG[color:$COLOR]}"
     if [ -n "$VAL" ]; then
@@ -69,8 +73,9 @@ function nrbm_mark_here () {
     fi
   done
 
+  echo -n "color: ${COLOR:-(skipped)} "
   BIOME_NAME="${BIOME_NAME%+}"
-  echo -n "color: $COLOR -> biome: ${BIOME_NAME:-unknown} "
+  echo -n "-> biome: ${BIOME_NAME:-unknown} "
   case "$BIOME_NAME" in
     FAIL )
       echo 'E: Found FAIL biome! Flinching.' >&2
@@ -79,6 +84,12 @@ function nrbm_mark_here () {
       echo "E: Found pixels from multiple biomes! Colors:$BIOME_COLORS" >&2
       return 4;;
   esac
+
+  if [ -z "$BIOME_NAME" -a -n "${CFG[ocr_cmd]}" ]; then
+    echo -n '-> trying OCR: '
+    BIOME_NAME="$( eval "${CFG[ocr_cmd]}" )"
+    echo -n "-> '$BIOME_NAME' "
+  fi
 
   [ -z "${CFG[look_before_setblock_wait]}" ] \
     || nrbm_send_chat_cmd look_before_setblock || return $?
@@ -92,6 +103,10 @@ function nrbm_mark_here () {
 
 
 function nrbm_mark_known_biome () {
+  COLOR="${CFG[color:$BIOME_NAME]}"
+  # ^-- In earlier versions with just sky color detection, this was done
+  #     implicitly by the first two rounds of the alias lookup loop.
+  #     Now with OCR, we have to explicitly lookup the name.
   for VAL in {1..8}; do
     VAL="${CFG[color:$COLOR]}"
     [ -n "$VAL" ] || break

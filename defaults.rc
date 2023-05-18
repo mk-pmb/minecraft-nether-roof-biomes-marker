@@ -164,10 +164,8 @@ CFG[setblock_d_y]=0
 CFG[setblock_d_z]=0
 
 # What item to place in case of valid biome, and how. "%c" is the result
-# from translating pixel colors using the "color:" options.
-# Pixels within the screenshot are scanned in American text reading order,
-# i.e. starting top-left, going right, then down to the left of the next
-# line. The first pixel that matches a "color:" option, wins and decides.
+# from translating pixel colors using the "color:" options. If several
+# pixels resolve to different biomes, the script will panic and flinch.
 CFG[setblock_cmd]='
   %y == 128   ?/setblock %x %y %z minecraft:%c_carpet
   %y == 128   ?/setblock ~ ~3 ~ minecraft:sea_lantern

@@ -53,14 +53,29 @@ function nrbm_mark_here () {
   CFG[chat:f]="$TPF"
   nrbm_send_chat_cmd teleport || return $?
 
-  local PIXELS=( $(nrbm_sshot_to_stdout | nrbm_stdin_pixels_to_hex) )
-  local COLOR= BIOME=
+  local PIXELS=( $(nrbm_sshot_to_stdout | nrbm_stdin_pixels_to_hex \
+    | sort --version-sort --unique ) )
+  local COLOR= BIOME= BIOME_COLORS= UNKNOWN_COLORS=
   for COLOR in "${PIXELS[@]}"; do
-    BIOME="${CFG[color:$COLOR]}"
-    [ -z "$BIOME" ] || break
+    VAL="${CFG[color:$COLOR]}"
+    if [ -n "$VAL" ]; then
+      BIOME+="$VAL+"
+      BIOME_COLORS+=" $COLOR"
+    else
+      UNKNOWN_COLORS+=" $COLOR"
+    fi
   done
+
+  BIOME="${BIOME%+}"
   echo -n "color: $COLOR -> biome: ${BIOME:-unknown} "
-  [ "$BIOME" == FAIL ] && return 4$(echo 'E: Found FAIL biome! Flinching.' >&2)
+  case "$BIOME" in
+    FAIL )
+      echo 'E: Found FAIL biome! Flinching.' >&2
+      return 4;;
+    *+* )
+      echo "E: Found pixels from multiple biomes! Colors:$BIOME_COLORS" >&2
+      return 4;;
+  esac
 
   [ -z "${CFG[look_before_setblock_wait]}" ] \
     || nrbm_send_chat_cmd look_before_setblock || return $?
@@ -91,7 +106,7 @@ function nrbm_mark_known_biome () {
 
 function nrbm_mark_unknown_biome () {
   (( N_BAD_BIOMES += 1 ))
-  echo "#$N_BAD_BIOMES"
+  echo "#$N_BAD_BIOMES, unknown colors:$UNKNOWN_COLORS"
 
   for AXIS in x y z; do
     eval VAL='$POS_'"${AXIS^^}"

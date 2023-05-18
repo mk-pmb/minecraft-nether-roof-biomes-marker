@@ -174,10 +174,8 @@ CFG[setblock_d_z]=0
 # from translating pixel colors using the "color:" options. If several
 # pixels resolve to different biomes, the script will panic and flinch.
 CFG[setblock_cmd]='
-  %y == 128   ?/setblock %x %y %z minecraft:%c_carpet
-  %y == 128   ?/setblock ~ ~3 ~ minecraft:sea_lantern
-  %y != 128   ?/setblock %x %y %z minecraft:%c_wool
-  %y -ge 130  ?/setblock ~ ~-1 ~ minecraft:lantern[hanging=true]
+  %y -ge 130  ?/setblock ~ ~-1 ~ minecraft:sea_lantern
+  /setblock %x %y %z minecraft:%c_carpet
   '
 # Lowercase %x, %y and %z are the current sampling point.
 #
@@ -209,7 +207,10 @@ CFG[setblock_wait]='0.2s'
 # What item to place in case of unknown biome, and how.
 # Unknown biome usually happens on the transition between two biomes,
 # when the sky color is a mix of nearby biomes.
-CFG[badbiome_cmd]='/setblock ~ ~ ~ minecraft:magma_block'
+CFG[badbiome_cmd]='
+  /setblock ~ ~-1 ~ minecraft:magma_block
+  /setblock %x %y %z minecraft:oak_button[face=floor]
+  '
 # %x, %y, %z, %X, %Y and %Z are like with `setblock_cmd` but using
 # the "badbiome_d_" offsets for uppercase. Conditions etc. also available.
 CFG[badbiome_d_x]=0

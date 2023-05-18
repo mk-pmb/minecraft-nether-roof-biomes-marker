@@ -113,6 +113,12 @@ CFG[color:554D5B]='basalt'
 
 
 
+# Xaero's World Map can display biome names, so we can also use OCR
+# as fallback if pixel colors aren't conclusive.
+CFG[ocr_cmd]='./util/gocr_xywh.sh 1300,328,300,22'
+
+
+
 # Map biome name to item name part "%c" for option "setblock_cmd".
 # Default colors are bright in order to contrast strongly with the bedrock.
 CFG[color:basalt]='light_gray'

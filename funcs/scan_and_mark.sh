@@ -4,13 +4,18 @@
 
 function nrbm_scan_and_mark () {
   local $(nrbm_calculate_ranges) || return $?
-  # local -p
+
+  local STOP_AT="${CFG[stop_at]:-0}"
+  [ "${STOP_AT:0:1}" == + ] && let STOP_AT="$N_PRI_SPT_DONE$STOP_AT"
+
   local PROGRESS_PERCENT='??'
   while [ "$N_PRI_SPT_DONE" -lt "$N_PRI_SPT_TOTAL" ]; do
     PROGRESS_PERCENT=$(( ( 100 * N_PRI_SPT_DONE ) / N_PRI_SPT_TOTAL ))
     printf '≈% 3d%%   ' "$PROGRESS_PERCENT"
     nrbm_mark_here || return $?
     (( N_PRI_SPT_DONE += 1 ))
+    [ "$STOP_AT" == 0 ] || [ "$N_PRI_SPT_DONE" -lt "$STOP_AT" ] || return 4$(
+      echo 'E: Reached the stop_at option condition. Quit.' >&2)
     nrbm_mark_additional_probing_points || return $?
     nrbm_calculate_next_block || return $?
   done

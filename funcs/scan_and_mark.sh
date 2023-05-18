@@ -9,6 +9,7 @@ function nrbm_scan_and_mark () {
   [ "${STOP_AT:0:1}" == + ] && let STOP_AT="$N_PRI_SPT_DONE$STOP_AT"
 
   local PROGRESS_PERCENT='??'
+  local N_BAD_BIOMES=0
   nrbm_scan_and_mark_main_loop && return 0
   local SAM_RV="$?"
   local MSG="E: $FUNCNAME failed (rv=$SAM_RV) at" AXIS=
@@ -58,7 +59,7 @@ function nrbm_mark_here () {
     BIOME="${CFG[color:$COLOR]}"
     [ -z "$BIOME" ] || break
   done
-  echo -n "color: $COLOR -> biome: ${BIOME:-unknown} -> "
+  echo -n "color: $COLOR -> biome: ${BIOME:-unknown} "
   [ "$BIOME" == FAIL ] && return 4$(echo 'E: Found FAIL biome! Flinching.' >&2)
 
   [ -z "${CFG[look_before_setblock_wait]}" ] \
@@ -70,7 +71,7 @@ function nrbm_mark_here () {
       [ -n "$VAL" ] || break
       COLOR="$VAL"
     done
-    echo "item color: $COLOR"
+    echo "-> item color: $COLOR"
     CFG[chat:c]="$COLOR"
     for AXIS in x y z; do
       eval VAL='$POS_'"${AXIS^^}"
@@ -78,7 +79,9 @@ function nrbm_mark_here () {
     done
     nrbm_send_chat_cmd setblock || return $?
   else
-    echo 'place reminder'
+    (( N_BAD_BIOMES += 1 ))
+    echo "#$N_BAD_BIOMES"
+
     for AXIS in x y z; do
       eval VAL='$POS_'"${AXIS^^}"
       let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"

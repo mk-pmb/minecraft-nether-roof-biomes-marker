@@ -74,34 +74,34 @@ function nrbm_mark_here () {
 
 
 function nrbm_mark_known_biome () {
-    for VAL in {1..8}; do
-      VAL="${CFG[color:$COLOR]}"
-      [ -n "$VAL" ] || break
-      COLOR="$VAL"
-    done
-    echo "-> item color: $COLOR"
-    CFG[chat:c]="$COLOR"
-    for AXIS in x y z; do
-      eval VAL='$POS_'"${AXIS^^}"
-      let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
-    done
-    nrbm_send_chat_cmd setblock || return $?
+  for VAL in {1..8}; do
+    VAL="${CFG[color:$COLOR]}"
+    [ -n "$VAL" ] || break
+    COLOR="$VAL"
+  done
+  echo "-> item color: $COLOR"
+  CFG[chat:c]="$COLOR"
+  for AXIS in x y z; do
+    eval VAL='$POS_'"${AXIS^^}"
+    let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
+  done
+  nrbm_send_chat_cmd setblock || return $?
 }
 
 
 function nrbm_mark_unknown_biome () {
-    (( N_BAD_BIOMES += 1 ))
-    echo "#$N_BAD_BIOMES"
+  (( N_BAD_BIOMES += 1 ))
+  echo "#$N_BAD_BIOMES"
 
-    for AXIS in x y z; do
-      eval VAL='$POS_'"${AXIS^^}"
-      let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
-    done
-    nrbm_send_chat_cmd badbiome || return $?
+  for AXIS in x y z; do
+    eval VAL='$POS_'"${AXIS^^}"
+    let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
+  done
+  nrbm_send_chat_cmd badbiome || return $?
 
-    VAL="${CFG[max_bad_biomes]:-0}"
-    [ "$VAL" == 0 ] || [ "$VAL" -gt "$N_BAD_BIOMES" ] || return 4$(
-      echo 'E: Reached the max_bad_biomes limit. Quit.' >&2)
+  VAL="${CFG[max_bad_biomes]:-0}"
+  [ "$VAL" == 0 ] || [ "$VAL" -gt "$N_BAD_BIOMES" ] || return 4$(
+    echo 'E: Reached the max_bad_biomes limit. Quit.' >&2)
 }
 
 

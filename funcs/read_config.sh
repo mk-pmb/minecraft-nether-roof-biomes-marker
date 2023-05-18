@@ -12,6 +12,7 @@ function nrbm_read_config () {
     [ "$K" == "$V" ] && K=
     V="${V#*=}"
     case "$K" in
+      ',' ) TASK_ARGS+=( "$V" );;
       '!' )
         CFG[task]="$V"
         TASK_ARGS=( "$@" )

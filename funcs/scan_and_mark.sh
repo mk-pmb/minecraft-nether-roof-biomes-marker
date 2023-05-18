@@ -23,17 +23,16 @@ function nrbm_mark_here () {
   printf 'x=% 5d   ' "$POS_X"
   printf 'z=% 5d   ' "$POS_Z"
 
-  local -A CHAT_SLOTS=()
   local AXIS= VAL= TPF=
   for AXIS in x y z; do
     eval VAL='$POS_'"${AXIS^^}"
-    CHAT_SLOTS[$AXIS]="$VAL"
-    let CHAT_SLOTS[${AXIS^^}]="$VAL + (${CFG[teleport_d_$AXIS]:-0})"
+    CFG[chat:$AXIS]="$VAL"
+    let CFG[chat:${AXIS^^}]="$VAL + (${CFG[teleport_d_$AXIS]:-0})"
     let VAL="$VAL + (${CFG[teleport_f_$AXIS]:-0})"
     TPF+="$VAL "
   done
   TPF="${TPF% }"
-  CHAT_SLOTS[f]="$TPF"
+  CFG[chat:f]="$TPF"
   nrbm_send_chat_cmd teleport || return $?
 
   local PIXELS=( $(nrbm_sshot_to_stdout | nrbm_stdin_pixels_to_hex) )
@@ -56,17 +55,17 @@ function nrbm_mark_here () {
       COLOR="$LOOKUP"
     done
     echo "item color: $COLOR"
-    CHAT_SLOTS[c]="$COLOR"
+    CFG[chat:c]="$COLOR"
     for AXIS in x y z; do
       eval VAL='$POS_'"${AXIS^^}"
-      let "CHAT_SLOTS[${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
+      let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
     done
     nrbm_send_chat_cmd setblock || return $?
   else
     echo 'place reminder'
     for AXIS in x y z; do
       eval VAL='$POS_'"${AXIS^^}"
-      let "CHAT_SLOTS[${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
+      let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[badbiome_d_$AXIS]:-0})"
     done
     nrbm_send_chat_cmd badbiome || return $?
   fi

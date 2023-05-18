@@ -8,9 +8,9 @@ function nrbm_send_chat_cmd () {
   [ -n "$MSG" ] || return 8$(
     echo "E: No such chat command template: $CHAT_CMD" >&2)
   local SLOT=
-  for SLOT in "${!CHAT_SLOTS[@]}"; do
-    MSG="${MSG//%$SLOT/${CHAT_SLOTS[$SLOT]}}"
-  done
+  for SLOT in "${!CFG[@]}"; do case "$SLOT" in
+    chat:* ) SCRIPT="${SCRIPT//%${SLOT#*:}/${CFG[$SLOT]}}";;
+  esac; done
   nrbm_send_chat_msg "$MSG"
   nrbm_wait_for_interaction "$CHAT_CMD" || return $?
 }

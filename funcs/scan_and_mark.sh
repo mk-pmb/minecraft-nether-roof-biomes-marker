@@ -66,6 +66,14 @@ function nrbm_mark_here () {
     || nrbm_send_chat_cmd look_before_setblock || return $?
 
   if [ -n "$BIOME" ]; then
+    nrbm_mark_known_biome || return $?
+  else
+    nrbm_mark_unknown_biome || return $?
+  fi
+}
+
+
+function nrbm_mark_known_biome () {
     for VAL in {1..8}; do
       VAL="${CFG[color:$COLOR]}"
       [ -n "$VAL" ] || break
@@ -78,7 +86,10 @@ function nrbm_mark_here () {
       let "CFG[chat:${AXIS^^}]=$VAL + (${CFG[setblock_d_$AXIS]:-0})"
     done
     nrbm_send_chat_cmd setblock || return $?
-  else
+}
+
+
+function nrbm_mark_unknown_biome () {
     (( N_BAD_BIOMES += 1 ))
     echo "#$N_BAD_BIOMES"
 
@@ -91,7 +102,6 @@ function nrbm_mark_here () {
     VAL="${CFG[max_bad_biomes]:-0}"
     [ "$VAL" == 0 ] || [ "$VAL" -gt "$N_BAD_BIOMES" ] || return 4$(
       echo 'E: Reached the max_bad_biomes limit. Quit.' >&2)
-  fi
 }
 
 

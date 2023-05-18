@@ -90,6 +90,13 @@ CFG[sshot_n]=5
 
 
 
+# You may give a filename for where to save the screenshot in case the
+# biome detection fails. Empty = Never save.
+CFG[sshot_save_on_error]='fail.%x_%y_%z.ppm'
+# %x, %y, %z = sampling point, %d = date (yymmdd), %t = time (hhmmss).
+
+
+
 # Map sky color (uppercase hex RRGGBB) to biome name.
 # Special biome name "FAIL" can be used to fail early. You may use this to
 # detect obvious failure conditions, e.g. when a color is found that is

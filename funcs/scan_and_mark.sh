@@ -9,6 +9,7 @@ function nrbm_scan_and_mark () {
   [ "${STOP_AT:0:1}" == + ] && let STOP_AT="$N_PRI_SPT_DONE$STOP_AT"
 
   local PROGRESS_PERCENT='??'
+  local SSHOT=
   local N_BAD_BIOMES=0
   nrbm_scan_and_mark_main_loop && return 0
   local SAM_RV="$?"
@@ -17,6 +18,7 @@ function nrbm_scan_and_mark () {
     eval 'MSG+=" resume_"$AXIS=$POS_'${AXIS^^}
   done
   echo "$MSG" >&2
+  nrbm_maybe_save_error_screenshot || return $?
   return "$SAM_RV"
 }
 
@@ -53,22 +55,23 @@ function nrbm_mark_here () {
   CFG[chat:f]="$TPF"
   nrbm_send_chat_cmd teleport || return $?
 
-  local PIXELS=( $(nrbm_sshot_to_stdout | nrbm_stdin_pixels_to_hex \
-    | sort --version-sort --unique ) )
-  local COLOR= BIOME= BIOME_COLORS= UNKNOWN_COLORS=
-  for COLOR in "${PIXELS[@]}"; do
+  SSHOT="$(nrbm_sshot_to_stdout)"
+  local BIOME_NAME= BIOME_COLORS= UNKNOWN_COLORS=
+  local COLOR="$( <<<"$SSHOT" nrbm_stdin_pixels_to_hex \
+    | sort --version-sort --unique )"
+  for COLOR in $COLOR; do
     VAL="${CFG[color:$COLOR]}"
     if [ -n "$VAL" ]; then
-      BIOME+="$VAL+"
+      BIOME_NAME+="$VAL+"
       BIOME_COLORS+=" $COLOR"
     else
       UNKNOWN_COLORS+=" $COLOR"
     fi
   done
 
-  BIOME="${BIOME%+}"
-  echo -n "color: $COLOR -> biome: ${BIOME:-unknown} "
-  case "$BIOME" in
+  BIOME_NAME="${BIOME_NAME%+}"
+  echo -n "color: $COLOR -> biome: ${BIOME_NAME:-unknown} "
+  case "$BIOME_NAME" in
     FAIL )
       echo 'E: Found FAIL biome! Flinching.' >&2
       return 4;;
@@ -80,7 +83,7 @@ function nrbm_mark_here () {
   [ -z "${CFG[look_before_setblock_wait]}" ] \
     || nrbm_send_chat_cmd look_before_setblock || return $?
 
-  if [ -n "$BIOME" ]; then
+  if [ -n "$BIOME_NAME" ]; then
     nrbm_mark_known_biome || return $?
   else
     nrbm_mark_unknown_biome || return $?
@@ -132,6 +135,24 @@ function nrbm_mark_additional_probing_points () {
     echo -n '   (+)  '
     nrbm_mark_here || return $?
   done
+}
+
+
+function nrbm_maybe_save_error_screenshot () {
+  local SAVE="${CFG[sshot_save_on_error]}"
+  [ -n "$SAVE" ] || return 0
+
+  SAVE="${SAVE//%x/$POS_X}"
+  SAVE="${SAVE//%y/$POS_Y}"
+  SAVE="${SAVE//%z/$POS_Z}"
+  local NOW=
+  printf -v NOW '%(%y%m%d %H%M%S)T' -1
+  SAVE="${SAVE//%d/${NOW% *}}"
+  SAVE="${SAVE//%t/${NOW#* }}"
+
+  echo -n "Saving error screenshot to $SAVE: "
+  echo "$SSHOT" >"$SAVE" || return 4$(echo 'E: Failed to save file!' >&2)
+  echo 'done.'
 }
 
 

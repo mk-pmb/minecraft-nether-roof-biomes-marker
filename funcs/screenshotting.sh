@@ -4,8 +4,7 @@
 
 function nrbm_stdin_pixels_to_hex () {
   local PM=()
-  readarray -t PM < <(convert - -compress none ppm:- \
-    | grep -vFe '#' | grep -oPe '\w+')
+  readarray -t PM < <(grep -oPe '\w+')
   [ "${PM[0]} ${PM[3]}" == 'P3 255' ] || return 7$(
     echo "E: Unexpected image file format after conversion." >&2)
   [ "${PM[1]} ${PM[2]}" == "${CFG[sshot_w]} ${CFG[sshot_h]}" ] || return 7$(
@@ -28,7 +27,8 @@ function nrbm_sshot_to_stdout () {
   local FAKE="${CFG[debug_fake_screenshot]}"
   if [ -n "$FAKE" ]; then cat -- "$FAKE"; return $?; fi
   local AREA="${CFG[sshot_x]},${CFG[sshot_y]},${CFG[sshot_w]},${CFG[sshot_h]}"
-  scrot --silent --autoselect "$AREA" --overwrite -- /dev/stdout
+  scrot --silent --autoselect "$AREA" --overwrite -- /dev/stdout \
+    | convert - -compress none ppm:- | grep -vFe '#'
 }
 
 

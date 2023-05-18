@@ -64,12 +64,11 @@ function nrbm_mark_here () {
   [ -z "${CFG[look_before_setblock_wait]}" ] \
     || nrbm_send_chat_cmd look_before_setblock || return $?
 
-  local LOOKUP=
   if [ -n "$BIOME" ]; then
-    for LOOKUP in {1..8}; do
-      LOOKUP="${CFG[color:$COLOR]}"
-      [ -n "$LOOKUP" ] || break
-      COLOR="$LOOKUP"
+    for VAL in {1..8}; do
+      VAL="${CFG[color:$COLOR]}"
+      [ -n "$VAL" ] || break
+      COLOR="$VAL"
     done
     echo "item color: $COLOR"
     CFG[chat:c]="$COLOR"

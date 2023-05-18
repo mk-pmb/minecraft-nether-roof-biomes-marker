@@ -160,7 +160,7 @@ CFG[teleport_wait]='0.2s'
 
 # Some offsets that will be explained in the description of setblock_cmd.
 CFG[setblock_d_x]=0
-CFG[setblock_d_y]=5
+CFG[setblock_d_y]=0
 CFG[setblock_d_z]=0
 
 # What item to place in case of valid biome, and how. "%c" is the result
@@ -204,11 +204,11 @@ CFG[setblock_wait]='0.2s'
 # What item to place in case of unknown biome, and how.
 # Unknown biome usually happens on the transition between two biomes,
 # when the sky color is a mix of nearby biomes.
-CFG[badbiome_cmd]='/setblock ~ ~5 ~ minecraft:magma_block'
+CFG[badbiome_cmd]='/setblock ~ ~ ~ minecraft:magma_block'
 # %x, %y, %z, %X, %Y and %Z are like with `setblock_cmd` but using
 # the "badbiome_d_" offsets for uppercase. Conditions etc. also available.
 CFG[badbiome_d_x]=0
-CFG[badbiome_d_y]=5
+CFG[badbiome_d_y]=0
 CFG[badbiome_d_z]=0
 
 # How much time to give each of the commands in badbiome_cmd to take effect.

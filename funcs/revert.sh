@@ -15,8 +15,10 @@ function nrbm_revert_preview () {
   # First, colorless items:
 
   local BLK='
-    redstone_lamp
     campfire
+    magma_block
+    redstone_lamp
+    sea_lantern
     '
   echo //replace "$(printf %s, $BLK)" air
 

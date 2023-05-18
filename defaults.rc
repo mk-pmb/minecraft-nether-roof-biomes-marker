@@ -156,32 +156,62 @@ CFG[teleport_cmd]='/teleport @s %X %Y %Z facing %f'
 # to screenshot the sky:
 CFG[teleport_wait]='0.2s'
 
+
+
+# Some offsets that will be explained in the description of setblock_cmd.
+CFG[setblock_d_x]=0
+CFG[setblock_d_y]=5
+CFG[setblock_d_z]=0
+
 # What item to place in case of valid biome, and how. "%c" is the result
 # from translating pixel colors using the "color:" options.
 # Pixels within the screenshot are scanned in American text reading order,
 # i.e. starting top-left, going right, then down to the left of the next
 # line. The first pixel that matches a "color:" option, wins and decides.
-CFG[setblock_cmd]='/setblock %x %y %z minecraft:%c_carpet'
+CFG[setblock_cmd]='
+  %y == 128   ?/setblock %x %y %z minecraft:%c_carpet
+  %y == 128   ?/setblock ~ ~3 ~ minecraft:sea_lantern
+  %y != 128   ?/setblock %x %y %z minecraft:%c_wool
+  %y -ge 130  ?/setblock ~ ~-1 ~ minecraft:lantern[hanging=true]
+  '
 # Lowercase %x, %y and %z are the current sampling point.
+#
 # Uppercase %X, %Y and %Z are %x/%y/%z plus the "setblock_d_" offsets.
-CFG[setblock_d_x]=0
-CFG[setblock_d_y]=5
-CFG[setblock_d_z]=0
+# (You probably won't need this because you can just use Minecraft's
+# "~ ~ ~" syntax for coordinates relative to your teleport location.
+#
+# In lines that contain a question mark, the part before the first
+# question mark is a filter for which lines shall be sent to the chat.
+# The filter will be evaluated using bash's built-in "test" command,
+# which means you can use these comparisons:
+#   ==    – exactly equal
+#   !=    – not equal
+#   -lt   – less than
+#   -le   – less than or equal
+#   -gt   – greater than
+#   -ge   – greater than or equal
+# See "man bash" for advanced syntax with multiple criteria.
+#
+# In the exotic case that you want to always send a chat message that contains
+# a question mark, or that starts with a space character, you can use the
+# always-true condition "1" to clarify that everything after the first
+# question mark shall always be sent.
+# Example: "  1 ?    ?!?!" will send "    ?!?!".
 
-# How much time to give the setblock_cmd to take effect.
+# How much time to give each of the commands in setblock_cmd to take effect.
 CFG[setblock_wait]='0.2s'
 
 # What item to place in case of unknown biome, and how.
 # Unknown biome usually happens on the transition between two biomes,
 # when the sky color is a mix of nearby biomes.
-CFG[badbiome_cmd]='/setblock %X %Y %Z minecraft:redstone_lamp[lit=true]'
-# Lowercase %x, %y and %z are the current sampling point.
-# Uppercase %X, %Y and %Z are %x/%y/%z plus the "badbiome_d_" offsets.
+CFG[badbiome_cmd]='/setblock ~ ~5 ~ minecraft:magma_block'
+# %x, %y, %z, %X, %Y and %Z are like with `setblock_cmd` but using
+# the "badbiome_d_" offsets for uppercase. Conditions etc. also available.
 CFG[badbiome_d_x]=0
 CFG[badbiome_d_y]=5
 CFG[badbiome_d_z]=0
 
-# How long it takes to run that command.
+# How much time to give each of the commands in badbiome_cmd to take effect.
 CFG[badbiome_wait]='0.2s'
 
 

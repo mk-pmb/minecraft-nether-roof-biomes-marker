@@ -3,16 +3,40 @@
 
 
 function nrbm_send_chat_cmd () {
+  # Ninja debug: ./nrbm.sh xdoprog=echo chat:y=128 !=send_chat_cmd setblock
   local CHAT_CMD="$1"
-  local MSG="${CFG[${CHAT_CMD}_cmd]}"
-  [ -n "$MSG" ] || return 8$(
-    echo "E: No such chat command template: $CHAT_CMD" >&2)
+  local SCRIPT="${CFG[${CHAT_CMD}_cmd]}"
+  case "$SCRIPT" in
+    '' )
+      echo "E: No such chat command template: $CHAT_CMD" >&2
+      return 8;;
+    *$'\f'* | *$'\r'* | *$'\t'* | *$'\v'* )
+      # Seems like your text editor had some kind of accident.
+      echo "E: Chat command template for $CHAT_CMD" \
+        "contains unsupported types of whitespace." >&2
+      return 8;;
+  esac
+
   local SLOT=
   for SLOT in "${!CFG[@]}"; do case "$SLOT" in
     chat:* ) SCRIPT="${SCRIPT//%${SLOT#*:}/${CFG[$SLOT]}}";;
   esac; done
-  nrbm_send_chat_msg "$MSG"
-  nrbm_wait_for_interaction "$CHAT_CMD" || return $?
+
+  local MSG= COND=
+  SCRIPT+=$'\n' # <- ensure we can always split off the last actual line.
+  while [ -n "$SCRIPT" ]; do
+    case "${SCRIPT:0:1}" in
+      ' ' | $'\n' ) SCRIPT="${SCRIPT:1}"; continue;;
+    esac
+    MSG="${SCRIPT%%$'\n'*}"
+    SCRIPT="${SCRIPT#*$'\n'}"
+    if [[ "$MSG" == *'?'* ]]; then
+      test ${MSG%%\?*} || continue
+      MSG="${MSG#*\?}"
+    fi
+    nrbm_send_chat_msg "$MSG"
+    nrbm_wait_for_interaction "$CHAT_CMD" || return $?
+  done
 }
 
 

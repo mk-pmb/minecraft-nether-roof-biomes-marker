@@ -1,0 +1,14 @@
+#!/bin/bash # <- Syntax hint for GitHub
+# -*- coding: utf-8, tab-width: 2 -*-
+
+# Slabs are spawn-proof with just one block placed, making them twice
+# as fast as the default carpets. They don't come with a light source,
+# but are good enough for viewing in Xaero's World Map.
+
+CFG[color:basalt]='cobblestone'
+CFG[color:crimson]='crimson'
+CFG[color:soulsand]='end_stone_brick'
+CFG[color:warped]='warped'
+CFG[color:wastes]='acacia'
+CFG[setblock_cmd]='/setblock %x %y %z minecraft:%c_slab[type=bottom]'
+CFG[badbiome_cmd]='/setblock %x %y %z minecraft:quartz_slab[type=bottom]'

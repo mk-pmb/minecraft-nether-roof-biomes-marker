@@ -3,7 +3,7 @@
 
 
 function nrbm_read_config () {
-  nrbm_source_one_in_func "$SELFPATH"/defaults.rc || return $?
+  nrbm_source_one_in_func "$NRBM_PATH"/defaults.rc || return $?
   local K= V=
   while [ "$#" -ge 1 ]; do
     V="$1"; shift

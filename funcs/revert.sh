@@ -2,7 +2,7 @@
 # -*- coding: utf-8, tab-width: 2 -*-
 
 
-function nrbm_revert () { nrbm_revert_preview | nrbm_stdin2chat; }
+function nrbm_revert () { "$FUNCNAME"_preview | nrbm_stdin2chat; }
 
 
 function nrbm_revert_preview () {

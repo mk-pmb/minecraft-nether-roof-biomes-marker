@@ -151,9 +151,13 @@ using the [Biome Mask][we-biome-mask].
   as the material with which to replace all `air` and `cave_air`.
 * The example loads the `slabs.rc` config because in the carpets from
   the default config would be rather fragile when placing in midair.
-* (Not available yet) For the overworld, add option `b=ow`.
-* (Not available yet) For the end, add option `b=end`.
 * You can also give a custom list of biome IDs, e.g. ` b=forest,ocean,desert`
+* You can use `b=@path/to/file.txt` to read the list of biomes from a file.
+  * If the file path doesn't contain a slash, it's treated as one of the
+    built-in lists, which means `.txt` is appended and the path adjusted
+    to inside `data/biome_shortnames/`.
+* You can use `b=<some/path/list.txt` (your shell may require quoting)
+  to read the biomes list from any file.
 
   [we-biome-mask]: https://worldedit.enginehub.org/en/latest/usage/general/masks/#biome-mask
 

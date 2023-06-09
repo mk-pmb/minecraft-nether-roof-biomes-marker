@@ -1,0 +1,7 @@
+# -*- coding: utf-8, tab-width: 2 -*-
+
+basalt(_deltas)
+crimson(_forest)
+(nether_)wastes
+soul(_)sand(_valley)
+warped(_forest)

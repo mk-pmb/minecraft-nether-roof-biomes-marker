@@ -17,6 +17,10 @@ How it works
 The script will `/teleport` you to pre-defined places in a grid,
 guess biome from sky color, and `/setblock` a marker block accordingly.
 
+If you have WorldEdit installed, it can even mark huge areas much more
+efficiently than the `/teleport` + `/setblock` approach.
+See "Using WorldEdit" below.
+
 
 
 ### This is a crutch.
@@ -126,6 +130,33 @@ Or you can write the preview to a file, adjust it, and then have that
 sent to chat:
 
 `./nrbm.sh task=stdin2chat <revert.txt`
+
+
+
+### Using WorldEdit
+
+I was blinded by all the forum threads where people discussed potential mods,
+but found none. I accepted the apparent lack of solutions too easily.
+Indeed it's a bit hidden in the docs, but WorldEdit can do it,
+using the [Biome Mask][we-biome-mask].
+
+1.  Hover with your feet at the center of the area where you want the marker
+    blocks to be placed.
+1.  To mark all biomes within X/Z ± 300 blocks around your feet:
+    `./nrbm.sh slabs.rc we=300`
+
+* The "we" (WorldEdit) mode will generate the `setblock_cmd` template
+  for each nether biome, find the first unconditional command that
+  starts with `/setblock %x %y %z `, and use the remainder of the line
+  as the material with which to replace all `air` and `cave_air`.
+* The example loads the `slabs.rc` config because in the carpets from
+  the default config would be rather fragile when placing in midair.
+* (Not available yet) For the overworld, add option `b=ow`.
+* (Not available yet) For the end, add option `b=end`.
+* You can also give a custom list of biome IDs, e.g. ` b=forest,ocean,desert`
+
+  [we-biome-mask]: https://worldedit.enginehub.org/en/latest/usage/general/masks/#biome-mask
+
 
 
 

@@ -3,6 +3,8 @@
 
 
 function nrbm_scan_and_mark () {
+  if [ -n "${CFG[we]}" ]; then nrbm_mark_we; return $?; fi
+
   local $(nrbm_calculate_ranges) || return $?
 
   local STOP_AT="${CFG[stop_at]:-0}"

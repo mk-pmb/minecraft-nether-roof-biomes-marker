@@ -10,11 +10,14 @@
 
 function srd_cli_init () {
   set -o errexit -o pipefail
+  local SELFPATH="$(readlink -m -- "$BASH_SOURCE"/..)"
+  source -- "$SELFPATH"/save_or_discard_iris_settings.sh --lib || return $?
 
   local MSGBOX_PROG='gxmessage'
   local INDICATOR_WNAME='MinecraftRenderDistanceIndicator'
   local INDICATOR_TITLE_SUFFIX=' render distance'
   local INDICATOR_FOUND="$(srd_query_indicator)"
+  local SEND_KEYS_CMD='send_keys_with_delay'
 
   local ARG="$1"; shift
   case "$ARG" in
@@ -28,44 +31,42 @@ function srd_cli_init () {
 
   local DIST="$ARG"
   # Go to settings
-  send_keys Escape Up Up Return
+  $SEND_KEYS_CMD Escape Up Up Return
   # Go to video settings
-  send_keys Down Down Down Return
-  # Select render distance slider (assuming Iris)
-  send_keys Down Return
+  $SEND_KEYS_CMD Down Down Down Return
+  # Select render distance slider (assuming traditional Iris)
+  $SEND_KEYS_CMD Down Down
 
   local MIN_DIST=2    # The left-most limit of the slider.
   case "$DIST" in
     - | + ) DIST+=1;;
-    [0-9]* ) send_keys $(str_repeat 64 'Left ');;
+    [0-9]* ) $SEND_KEYS_CMD $(str_repeat 64 'Left ');;
   esac
   srd_update_indicator "$DIST" || true
   case "$DIST" in
-    -[0-9]* ) send_keys $(str_repeat "${DIST#-}" 'Left ');;
-    +[0-9]* ) send_keys $(str_repeat "${DIST#+}" 'Right ');;
+    -[0-9]* ) $SEND_KEYS_CMD $(str_repeat "${DIST#-}" 'Left ');;
+    +[0-9]* ) $SEND_KEYS_CMD $(str_repeat "${DIST#+}" 'Right ');;
     [0-9]* )
       [ "$DIST" -ge "$MIN_DIST" ] || return 4$(
         echo "E: Minimum render distance in slider is $MIN_DIST" >&2)
       (( DIST -= MIN_DIST )) || true
-      send_keys $(str_repeat "$DIST" 'Right ')
+      $SEND_KEYS_CMD $(str_repeat "$DIST" 'Right ')
       ;;
     * ) echo "E: Unsupported render distance format." >&2; return 3;;
   esac
-  send_keys Return
-  # Select "Apply" button
-  send_keys Shift+Tab Down
-  [ -z "$WAIT" ] || sleep "$WAIT"
-  # Press "Apply" button
-  send_keys Return
-  # Done
-  send_keys Up Down Return
-  # Back to game
-  send_keys Escape
+
+  save_or_discard_iris_settings || return $?
 }
 
 
-function send_keys () {
+function send_keys_with_delay () {
   [ "$#" -ge 1 ] || return 0
+  local CTD="$KEY_PREVIEW_CTD"
+  if [ -n "$CTD" ]; then
+    echo "D: $FUNCNAME: $*" >&2
+    sleep "$CTD" || return $?
+  fi
+
   xdotool key "$@"
   local DELAY=
   let DELAY="50 + (15 * $#)"

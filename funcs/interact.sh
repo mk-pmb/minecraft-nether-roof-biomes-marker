@@ -60,7 +60,7 @@ function nrbm_stdin2chat () {
     LN="${LN%$'\r'}"
     case "$LN" in
       '//# n_msgs='* ) N_TOTAL="${LN#*=}";;
-      '#'* ) ;;
+      '' | '#'* ) ;;
       . ) break;;
       * )
         (( N_SENT += 1 ))

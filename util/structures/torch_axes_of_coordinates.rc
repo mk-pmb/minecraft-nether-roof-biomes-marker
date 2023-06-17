@@ -1,0 +1,50 @@
+#!/bin/bash # <- Syntax hint for GitHub
+# -*- coding: utf-8, tab-width: 2 -*-
+
+
+CFG[task]='axis_torches'
+CFG[base_y]=128
+CFG[stack]=100
+
+
+function nrbm_axis_torches () {
+  local BY="${CFG[base_y]}"
+
+  echo /gamemode spectator
+  echo /tp @s -20 $(( BY + 7 )) -20 facing 0 $BY -45
+
+  local ST="${CFG[stack]}"
+  echo //pos1 1,$BY,-19
+  echo //pos2 1,$BY,-28
+  if [ "$ST" -lt 0 ]; then
+    echo //expand "${ST#-}"2 n
+    echo //set air
+  else
+    echo //set air
+    echo /setblock 1 $BY -20 glass
+    echo /setblock 1 $BY -19 'wall_torch[facing=south]'
+    echo //stack 1 n
+    echo //shift 2 n
+    echo //stack $ST n
+    echo //expand 2 s
+    echo //expand "$ST"0 n
+  fi
+  echo /tp @s 0 $(( BY + 30 )) 0 facing 0 0 1
+  echo //copy
+
+  for ST in {1..3}; do
+    echo '//# delay=0.5s'
+    echo //rotate 90
+    echo //paste
+  done
+
+  echo '/;'
+}
+
+
+
+
+
+
+
+# This line is a work-around for a misfeature of my text editor.

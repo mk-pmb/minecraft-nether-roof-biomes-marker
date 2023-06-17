@@ -8,6 +8,7 @@ function nrbm_read_config () {
   while [ "$#" -ge 1 ]; do
     V="$1"; shift
     if [ "$V" == -- ]; then TASK_ARGS=( "$@" ); break; fi
+    [ -z "${CFG[alias:$V]}" ] || V="${CFG[alias:$V]}"
     K="${V%%=*}"
     [ "$K" == "$V" ] && K=
     V="${V#*=}"

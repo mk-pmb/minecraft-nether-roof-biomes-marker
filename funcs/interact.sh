@@ -59,9 +59,17 @@ function nrbm_stdin2chat () {
     IFS= read -r LN || break
     LN="${LN%$'\r'}"
     case "$LN" in
-      '//# n_msgs='* ) N_TOTAL="${LN#*=}";;
       '' | '#'* ) ;;
       . ) break;;
+
+      '//# n_msgs='* ) N_TOTAL="${LN#*=}";;
+      '//# delay='* )
+        LN="${LN#*=}"
+        LN="${LN%% *}"
+        [ "$DBGLV" -lt 4 ] || echo "D: $FUNCNAME delay: '$LN'" >&2
+        sleep "$LN" || return $?
+        ;;
+
       * )
         (( N_SENT += 1 ))
         [ -z "$N_TOTAL" ] || echo -n $'\r'"Message #$N_SENT of $N_TOTAL (≈"$((

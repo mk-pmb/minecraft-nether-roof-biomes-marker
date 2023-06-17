@@ -5,9 +5,10 @@ CFG[task]='woep'
 CFG[base_y]=128
 # CFG[base_y]=135
 
-CFG[wall_material]='deepslate_brick_wall'
-# CFG[wall_material]='oak_fence'
+CFG[wall_material]='nether_brick_wall'
 # CFG[wall_material]='cobblestone_wall'
+# CFG[wall_material]='deepslate_brick_wall'
+# CFG[wall_material]='oak_fence'
 # CFG[wall_material]='red_sandstone_wall'
 
 CFG[trapdoor_wood]='oak'

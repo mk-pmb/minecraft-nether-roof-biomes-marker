@@ -81,6 +81,13 @@ function nrbm_wait_for_interaction () {
 }
 
 
+function nrbm_wepos12 () {
+  echo //pos1 "$1"; shift
+  echo //pos2 "$1"; shift
+  [ "$#" == 0 ] || printf -- '//%s\n' "$@"
+}
+
+
 
 
 

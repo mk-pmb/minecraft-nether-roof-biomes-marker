@@ -17,8 +17,8 @@ function nrbm_init () {
   nrbm_read_config "$@" || return $?
   eval "${CFG[hook:before_task]}" || return $?$(
     echo "E: hook:before_task failed, rv=$?" >&2)
-  nrbm_"${CFG[task]}" "${TASK_ARGS[@]}" || return $?$(
-    echo "E: Task '${CFG[task]}' failed with error code $?." >&2)
+  [ "${CFG[task]}" == - ] || nrbm_"${CFG[task]}" "${TASK_ARGS[@]}" \
+    || return $?$(echo "E: Task '${CFG[task]}' failed with error code $?." >&2)
 }
 
 

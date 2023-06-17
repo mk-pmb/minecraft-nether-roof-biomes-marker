@@ -1,0 +1,162 @@
+#!/bin/bash # <- Syntax hint for GitHub
+# -*- coding: utf-8, tab-width: 2 -*-
+
+CFG[task]='woep'
+CFG[base_y]=128
+# CFG[base_y]=135
+
+CFG[wall_material]='deepslate_brick_wall'
+# CFG[wall_material]='oak_fence'
+# CFG[wall_material]='cobblestone_wall'
+# CFG[wall_material]='red_sandstone_wall'
+
+CFG[trapdoor_wood]='oak'
+# CFG[trapdoor_wood]='warped'
+
+CFG[platform_radius]=4
+CFG[platform_north_beyond_portal]=2
+CFG[wall_dist]=5
+CFG[wall_gate_bonus]=1  # How much extra gap on each side.
+
+
+
+function nrbm_woep () {
+  local PR="${CFG[platform_radius]}"
+  local PZ=-5   # Portal Z
+  local BY="${CFG[base_y]}"
+  local WD="${CFG[wall_dist]}"
+  local WGB="${CFG[wall_gate_bonus]}"
+  local NBP="${CFG[platform_north_beyond_portal]}"
+  local MAT_WALL="${CFG[wall_material]}"
+  local MAT_BASE="${MAT_WALL%_*}"
+  local MAT_BLOCK="$MAT_BASE"
+  case "$MAT_WALL" in
+    *_brick_wall ) MAT_BLOCK+='s';;
+    *_fence ) MAT_BLOCK+='_planks';;
+  esac
+
+  echo /gamemode spectator
+  local MAX_X=$(( PR +WD )); local MIN_X="-$MAX_X"
+  local MAX_Z=$(( PR +WD )); local MIN_Z=$(( -$MAX_Z -NBP -1 ))
+  local D= M= X= Y= Z=
+
+  local CAM_CORNER="echo /tp @s $MAX_X $(( BY +8 )) $MIN_Z"$(
+    )" facing 0 $(( BY -2 )) 0"
+  local PREPARE_COPY_FLIP_SOUTH="echo /tp @s 0 $(( BY + 20
+    )) %z facing 0 $BY -1"
+  ${PREPARE_COPY_FLIP_SOUTH//%z/0}
+
+  local SEL_BBOX="nrbm_wepos12 $MIN_X,$BY,$MIN_Z $MAX_X,$(( BY +5 )),$MAX_Z"
+  $SEL_BBOX 'set air'
+
+  nrbm_wepos12 $MIN_X,$BY,$MIN_Z $MAX_X,$BY,$MAX_Z "walls $MAT_WALL"
+  echo '/;'
+
+  # Set wall torches: Prepare
+  M="${CFG[fence_lights_block]:-torch}"
+  Y=$(( BY + 1 ))
+  D=$(( WGB + 1 ))
+  # Set wall torches: On short sides
+  for Z in $MIN_Z $MAX_Z; do
+    for X in $MIN_X -$D $D $MAX_X; do
+      echo /setblock $X $Y $Z $M
+    done
+  done
+  # Set wall torches: On long sides
+  for Z in {,-}$D $(( ( MIN_Z - D ) / 2 )); do
+    for X in $MIN_X $MAX_X; do
+      echo /setblock $X $Y $Z $M
+    done
+  done
+
+  $CAM_CORNER
+  nrbm_wepos12 -$WGB,$BY,$MIN_Z $WGB,$BY,$MAX_Z 'set air'
+  nrbm_wepos12 $MIN_X,$BY,-$WGB $MAX_X,$BY,$WGB 'set air'
+  echo '/;'
+
+  echo /setblock 0 $(( BY + 4 )) 0 lantern[hanging=true]
+
+  # Ensure non-air below the 0:0 carpet
+  nrbm_wepos12 0,$(( BY -1 )),0{,} 'replace air glass'
+
+  M="$MAT_BASE"_slab[type=bottom]
+  echo /setblock 0 $(( BY + 5 )) 0 "$M"
+  nrbm_wepos12 -$PR,$BY,$(( -PR -NBP -1 )) $PR,$BY,$PR "set $M"
+
+  echo /setblock 0 $BY 0 black_carpet
+  echo /setblock 1 $BY -1 "$MAT_BLOCK"
+  nrbm_wepos12 1,{$(( BY +1 )),$(( BY +4 ))},-1 "set $MAT_WALL"
+
+  local M="$MAT_BASE"_stairs[half=bottom,facing=%]
+  echo /setblock 0 $BY -1 "${M//%/north}"
+  for D in 1 0; do
+    echo /setblock $D $BY -2 "${M//%/south}"
+    echo /setblock 2 $BY $(( -1 -D )) "${M//%/west}"
+    echo /setblock $D $(( BY + 4 )) -1 "${M//%/south}"
+  done
+
+  ${PREPARE_COPY_FLIP_SOUTH//%z/0}
+  nrbm_wepos12 0,$BY,-1 2,$(( BY +4 )),-2 copy
+  for D in 1 2 3; do
+    echo //rotate 90
+    echo //paste
+  done
+  $CAM_CORNER
+
+  nrbm_wepos12 -2,$BY,$PZ 2,$(( BY + 4 )),$PZ 'set obsidian'
+  echo /setblock -2 $BY $PZ glowstone
+  echo /setblock  2 $BY $PZ glowstone
+  echo //contract 1 w,e,u,d
+  echo //set air
+  nrbm_wepos12 {-,}2,$(( BY + 5 )),$PZ 'set black_carpet'
+  echo '/;'
+
+  M="${CFG[trapdoor_wood]}"'_trapdoor[half=top,facing=north'
+  nrbm_wepos12 {-,}1,$(( BY +3 )),$(( PZ -1 )) \
+    "set $M,open=true]" 'shift 1 d' "set $M]"
+
+  ${PREPARE_COPY_FLIP_SOUTH//%z/$PZ}
+  echo //expand 1 u
+  echo //copy
+  echo //flip s
+  echo //paste
+
+  $CAM_CORNER
+  # echo /gamemode creative
+  echo /setblock 0 $(( BY + 1 )) $PZ fire
+
+  # $SEL_BBOX 'distr -p '{1..2}
+  # ^-- Seems like we'd have to wait several seconds until block data
+  #     has settled enough for //distr to show current state.
+  #     However, we cannot idle that long or users will think we're done.
+
+  echo '/;'
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# This line is a work-around for a misfeature of my text editor.

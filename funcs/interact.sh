@@ -145,14 +145,8 @@ function nrbm_confirm_continue () {
   gxmessage "${GX_OPT[@]}" -file <(echo "$MSG") &
   local GX_PID="$!"
 
-  sleep 0.5s # Wait for gxm window to be ready.
-  local GX_WIN='s~\s+~ ~g;s~^(0x\S+) \S+ '"$GX_PID"' .*$~\1~p'
-  GX_WIN="$(wmctrl -pl | sed -nre "$GX_WIN")"
-  case "$GX_WIN" in
-    '' ) echo "E: Failed to find confirmation window ID" >&2; return 6;;
-    *$'\n'* ) echo "E: Found too many confirmation window IDs" >&2; return 7;;
-  esac
-
+  local GX_WIN="$(nrbm_find_window_by_pid "$GX_PID")"
+  [ -n "$GX_WIN" ] || return 4
   while sleep 0.2s && kill -0 "$GX_PID" &>/dev/null; do
     wmctrl -iFr "$GX_WIN" -T "($SECONDS / $LIMIT) $GX_TITLE" \
       &>/dev/null || true
@@ -208,6 +202,36 @@ function nrbm_confirm_we_done () {
     'Please confirm when WE reports it finished.' '' \
     "Time limit config key: $AUTOCTD_KEY" \
     || return $?
+}
+
+
+function nrbm_find_window_by_pid () {
+  local W_PID="$1"; shift
+  local NUM_ATTEMPTS="${1:-10}"; shift
+  local RETRY_DELAY="${1:-0.2s}"; shift
+  local W_ID=
+  local RGX='s~\s+~ ~g;s~^(0x\S+) \S+ '"$W_PID"' .*$~\1~p'
+  while [ "$NUM_ATTEMPTS" -ge 1 ]; do
+    kill -0 "$W_PID" &>/dev/null || return 7$(
+      echo "E: Process $W_PID not found, will not have any windows." >&2)
+    W_ID="$(wmctrl -pl | sed -nre "$RGX")"
+    case "$W_ID" in
+      *$'\n'* )
+        echo "E: Found too many window IDs for PID $W_PID" >&2
+        return 8
+        ;;
+      '' )
+        (( NUM_ATTEMPTS -= 1 ))
+        sleep "$RETRY_DELAY" || return 9
+        ;;
+      * )
+        echo "$W_ID"
+        return 0
+        ;;
+    esac
+  done
+  echo "E: Failed to find window ID for PID $W_PID" >&2
+  return 6
 }
 
 

@@ -133,7 +133,8 @@ sent to chat:
 
 
 
-### Using WorldEdit
+Using WorldEdit
+---------------
 
 I was blinded by all the forum threads where people discussed potential mods,
 but found none. I accepted the apparent lack of solutions too easily.

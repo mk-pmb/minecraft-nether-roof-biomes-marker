@@ -164,9 +164,19 @@ function nrbm_mark_we_chunk_corners () {
 
   if [ "$MAX_CZ" != "$MIN_CZ" ]; then
     [ "$AIRSIDE" == a ] || echo //gmask air
-    echo //'# confirm_we_done=stack_south<180' stack $(( MAX_CZ - MIN_CZ
-      )) 's'$'\t# Stack marker template range to south border.'$(
-      )" (ch_z=$MAX_CZ blk_z=$MAX_BZ)"
+    # We'll stack chunk-by-chunk to help avoid memory exhaustion.
+    # We do that from far to near for an early opportunity to check
+    # the far end for off-by-one errors.
+    # Also this way we don't need to save the maximum chunk distance
+    # because we start at that and then count down to 1.
+    (( DZ = MAX_CZ - MIN_CZ ))
+    while [ "$DZ" -ge 1 ]; do
+      # Trivial proof we need -ge 1: Vector 0,0,0 is useless as direction.
+      # NB: The stack direction wector is multiplied by selection size.
+      echo //'# confirm_we_done=stack_south<60' stack 1 0,0,$DZ$(
+        )$'\t# Stack marker template range to south border.'" (dz=$DZ)"
+      (( DZ -= 1 ))
+    done
   fi
 
   # We can't operate on huge selections due to WE not-a-bug #2343,

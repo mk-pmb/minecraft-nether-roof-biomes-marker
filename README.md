@@ -194,8 +194,8 @@ Specify `we=cc` to use WorldEdit to mark chunk corners.
     See also the `tour=` option below.
 * RAM usage work-around:
   Chunk corners mode operates on a slice of the area
-  (the "air" side, see option `a=` below)
-  and then progressively moves the selection.
+  (the "air" side, see option `a=` below) and then progressively stacks it,
+  and also progressively moves the selection for marker block replacements.
 
 This enables additional options, listed here with their default values:
 

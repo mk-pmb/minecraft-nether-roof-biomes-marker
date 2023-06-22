@@ -88,8 +88,8 @@ function nrbm_stdin2chat () {
         ;;
       . ) break;;
     esac
-    [ -z "$N_TOTAL" ] || printf -- '\r%s #%s/%s (≈%s) ' "$RCV_TIME" \
-      "$N_LINES_READ" "$N_TOTAL" $(( ( 100 * N_SENT ) / N_TOTAL ))
+    [ -z "$N_TOTAL" ] || printf -- '\r%s #%s/%s (≈%s%) ' "$RCV_TIME" \
+      "$N_LINES_READ" "$N_TOTAL" $(( ( 100 * N_LINES_READ ) / N_TOTAL ))
     [ -z "$HINT" ] || echo "# $HINT"
     [ "$DBGLV" -lt 4 ] || echo "$FX=$LN" >&2
 

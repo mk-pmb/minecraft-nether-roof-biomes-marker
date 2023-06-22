@@ -163,6 +163,102 @@ using the [Biome Mask][we-biome-mask].
   [we-biome-mask]: https://worldedit.enginehub.org/en/latest/usage/general/masks/#biome-mask
 
 
+### A note on WorldEdit's RAM usage
+
+WorldEdit devs seem to consider it _your_ job as the user to divide the
+area to be worked on into portions small enough to fit your RAM. &rarr;
+[not-a-bug #2343](https://github.com/EngineHub/WorldEdit/issues/2343)
+
+NRBM has some makeshift work-arounds for this, which are described in the
+modes that offer them.
+
+However, this still seems to leak memory, so you'd better
+__restart Minecraft before and after you use NRBM__ in WE mode.
+
+In a multiplayer scenario, you may have to restart the server.
+I haven't tested that. If you do have to, it's probably not a WE bug,
+but rather your fault for using stock WE on large areas.
+
+(Because why bloat the main mod if you can solve it yourself?
+Feel free to write your own mod that does the dividing and then calls the
+WE API for each sub-region. Or you could just install/assign more RAM. 🤷)
+
+
+### Alternative: Mark chunk corners
+
+Specify `we=cc` to use WorldEdit to mark chunk corners.
+
+* ⚠ For correct operation, ensure you are in creative mode and you are flying!
+  * It might work in spectator mode as well if spectators generate terrain or
+    all chunks for the entire target area are already generated.
+    See also the `tour=` option below.
+* RAM usage work-around:
+  Chunk corners mode operates on a slice of the area
+  (the "air" side, see option `a=` below)
+  and then progressively moves the selection.
+
+This enables additional options, listed here with their default values:
+
+* `x=0` and `z=0`: The chunk coordinates of the chunk to be marked,
+  as given in the "Chunk:" line in the debug screen.
+  * To mark multiple consecutive chunks, you can give minimum and maximum
+    values separated by two dots, e.g. `x=-10..10 z=30..50`
+  * A shorthand notation for origin-centered ranges is available:
+    `x=+-5 z=+-8` is equivalent to `x=-5..5 z=-8..8`.
+    * The Unicode variant `x=±5 z=±8` should work as well,
+      if your bash and terminal play together nicely.
+    * If you want to mirror on the 0/-1 block coordinate, with `n` chunks
+      on either side, you may use the shorthand `[xz]=:n`, e.g.
+      `x=:5 z=:8` which will be equivalent to `x=-5..4 z=-8..7`.
+  * Shorthand for setting the `x` and `z` to the same value: `x=z=±20`
+* `y=160`: The height at which to place the marker blocks.
+  * You can also give a comma-separated triplet of minimum, gap and maximum:
+    `y=140,19,180` will create three floors, with 19 blocks gap between them,
+    at height levels 140, 160, and 180.
+  * ⚠ When you use decorations above or below the marker blocks,
+    the effective target area will grow accordingly,
+    beyond the marker block range given in `y=`.
+* `a=n`: The "air" side of the region to be marked.
+  Must be one of the letters `news` to denote north, east, west or south.
+  In chunks on that border of the target area, everything in the affected
+  height range (including what will become be the gaps) will be cleared
+  (set to air).
+  * You may also use `a=a` to clear the entire target area.
+  * Currently, only `a=n` and `a=a` are implemented.
+* `b=n`: Biomes list as described above.
+* `t=structure_block`:
+  A temporary block to mark the corners for shape only.
+  They will then later be replaced by the actual biome marker materials.
+  The temporary block should be something that did not originally exist in
+  the area to be marked.
+  It should also be something robust that doesn't change block state
+  (fall, decay, pop, melt, …) on its own.
+* `above=.`:
+  Dot (`.`) for no effect, or a block name to put above every marker block.
+  * ⚠ The effective target area will grow to one block above the `y=` range.
+* `below=glowstone`:
+  Dot (`.`) for no effect, or a block name to put below every marker block.
+  * ⚠ The effective target area will grow to one block below the `y=` range.
+* `tour=0,0`:
+  When the first number is positive, rather than actually marking stuff,
+  just teleport around the target area in steps of (first number) chunks.
+  At each position, wait (second number) seconds for the world to generate.
+  * `mapkey=`: When set, press this key after each tour teleport,
+    and press the Escape key before each subsequent teleport command.
+  * `skip=0`: When positive, skip the first `skip` steps.
+  * `pat=zx`: Which pattern to walk.
+    * `zx`: Start at north-west corner, travel east,
+      jump back to west but one step south, and travel east again.
+    * `cws`: Clock-wise spiral.
+      Not yet implemented.
+      Traveling in a spiral will hopefully make it easier to
+      skip the inner area when expanding outwards.
+
+
+
+
+
+
 
 
 

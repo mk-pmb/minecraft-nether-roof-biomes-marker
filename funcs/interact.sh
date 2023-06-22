@@ -154,7 +154,11 @@ function nrbm_confirm_continue () {
   esac
 
   while sleep 0.2s && kill -0 "$GX_PID" &>/dev/null; do
-    wmctrl -iFr "$GX_WIN" -T "($SECONDS / $LIMIT) $GX_TITLE" || true
+    wmctrl -iFr "$GX_WIN" -T "($SECONDS / $LIMIT) $GX_TITLE" \
+      &>/dev/null || true
+    # Errors here are not important: If the window still exists,
+    # it will be updated again really soon. Usually the error is
+    # just a race condition with the window already closed.
   done
 
   wait "$GX_PID" || return 6$(

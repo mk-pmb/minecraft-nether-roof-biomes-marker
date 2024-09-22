@@ -11,7 +11,7 @@
 function srd_cli_init () {
   set -o errexit -o pipefail
   local SELFPATH="$(readlink -m -- "$BASH_SOURCE"/..)"
-  source -- "$SELFPATH"/save_or_discard_iris_settings.sh --lib || return $?
+  source -- "$SELFPATH"/save_or_discard_sodium_settings.sh --lib || return $?
 
   local MSGBOX_PROG='gxmessage'
   local INDICATOR_WNAME='MinecraftRenderDistanceIndicator'
@@ -33,9 +33,11 @@ function srd_cli_init () {
   # Go to settings
   $SEND_KEYS_CMD Escape Up Up Return
   # Go to video settings
-  $SEND_KEYS_CMD Down Down Down Return
-  # Select render distance slider (assuming traditional Iris)
-  $SEND_KEYS_CMD Down Down
+  $SEND_KEYS_CMD Down Down Return
+  # Select render distance slider
+  #   * assuming traditional Sodium
+  #     * i.e. not using Reese's Sodium Options
+  $SEND_KEYS_CMD Down
 
   local MIN_DIST=2    # The left-most limit of the slider.
   case "$DIST" in
@@ -55,7 +57,7 @@ function srd_cli_init () {
     * ) echo "E: Unsupported render distance format." >&2; return 3;;
   esac
 
-  save_or_discard_iris_settings || return $?
+  save_or_discard_sodium_settings || return $?
 }
 
 
